@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ProfileController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('courses.index'));
@@ -26,5 +27,16 @@ Route::middleware('auth')->group(function () {
 // Public: index and show. Keep this AFTER the group above, otherwise
 // GET /courses/create would be matched by GET /courses/{course}.
 Route::resource('courses', CourseController::class)->only(['index', 'show']);
+
+// Admin area: must be logged in AND have the admin role
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', function () {
+            $users = User::withCount('courses')->orderBy('role')->orderBy('name')->get();
+            return view('admin.index', compact('users'));
+        })->name('index');
+    });
 
 require __DIR__.'/auth.php';

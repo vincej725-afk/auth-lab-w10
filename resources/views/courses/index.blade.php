@@ -2,7 +2,9 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800">Courses</h2>
-            <a href="{{ route('courses.create') }}" class="text-indigo-600">+ New course</a>
+            @can('create', App\Models\Course::class)
+                <a href="{{ route('courses.create') }}" class="text-indigo-600">+ New course</a>
+            @endcan
         </div>
     </x-slot>
 
@@ -13,14 +15,16 @@
 
         <div class="bg-white shadow rounded divide-y">
             @forelse ($courses as $course)
-                <a href="{{ route('courses.show', $course) }}"
-                   class="block px-4 py-3 hover:bg-gray-50">
-                    <b>{{ $course->code }}</b> - {{ $course->title }}
-                    <span class="text-sm text-gray-500">({{ $course->owner->name }})</span>
-                    @unless ($course->is_active)
-                        <span class="text-xs text-red-600">inactive</span>
-                    @endunless
-                </a>
+                @can('view', $course) {{-- hides inactive courses from non-owners --}}
+                    <a href="{{ route('courses.show', $course) }}"
+                       class="block px-4 py-3 hover:bg-gray-50">
+                        <b>{{ $course->code }}</b> - {{ $course->title }}
+                        <span class="text-sm text-gray-500">({{ $course->owner->name }})</span>
+                        @unless ($course->is_active)
+                            <span class="text-xs text-red-600">inactive</span>
+                        @endunless
+                    </a>
+                @endcan
             @empty
                 <p class="px-4 py-3 text-gray-500">No courses yet.</p>
             @endforelse

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Course;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -9,7 +10,12 @@ class CourseRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Part C replaces this with a policy check
+        // a Course model when updating, null when creating
+        $course = $this->route('course');
+
+        return $course
+            ? $this->user()->can('update', $course)
+            : $this->user()->can('create', Course::class);
     }
 
     public function rules(): array
