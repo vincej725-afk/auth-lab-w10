@@ -2,24 +2,41 @@
 
 namespace Database\Seeders;
 
+use App\Models\Course;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Demo accounts - every password is: password
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin User', 'email' => 'admin@example.com',
+            'role' => 'admin',
         ]);
+
+        $ana = User::factory()->create([
+            'name' => 'Ana Instructor', 'email' => 'ana@example.com',
+            'role' => 'instructor',
+        ]);
+
+        $ben = User::factory()->create([
+            'name' => 'Ben Instructor', 'email' => 'ben@example.com',
+            'role' => 'instructor',
+        ]);
+
+        $carla = User::factory()->create([
+            'name' => 'Carla Student', 'email' => 'carla@example.com',
+            'role' => 'student',
+        ]);
+
+        // Ana owns 3 courses (one inactive); Ben owns 3
+        $anaCourses = Course::factory(2)->for($ana, 'owner')->create();
+        Course::factory()->inactive()->for($ana, 'owner')->create();
+        Course::factory(3)->for($ben, 'owner')->create();
+
+        // Carla is enrolled in Ana's first course, so that course cannot be deleted
+        $anaCourses->first()->students()->attach($carla);
     }
 }
