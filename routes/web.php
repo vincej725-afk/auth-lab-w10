@@ -5,7 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('courses.index'));
+Route::get('/', fn() => redirect()->route('courses.index'));
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -39,4 +39,4 @@ Route::middleware(['auth', 'role:admin'])
         })->name('index');
     });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
